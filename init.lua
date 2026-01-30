@@ -53,15 +53,21 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
-    {
-        -- color theme setup
-        "folke/tokyonight.nvim",
-        lazy = false,
-        priority = 1000,
-        config = function()
-            vim.cmd("colorscheme tokyonight-night")
-        end,
-    },
+{ "EdenEast/nightfox.nvim" },
+    -- {
+    --     -- color theme setup
+    --     "folke/tokyonight.nvim",
+    --     lazy = false,
+    --     priority = 1000,
+    --     config = function()
+    --         require("tokyonight").setup({
+    --             transparent = false,
+    --             style = "night",
+    --         })
+    --
+    --         -- vim.cmd("colorscheme tokyonight-night")
+    --     end,
+    -- },
     {
         'nvim-lualine/lualine.nvim',
         dependencies = {'nvim-tree/nvim-web-devicons'}
@@ -159,6 +165,29 @@ require("lazy").setup({
     }
 
 })
+require('telescope').setup({
+    pickers = {
+        find_files = {find_command = { "fd", "--type", "f", "--hidden", "--exclude", ".git" },
+            -- hidden = true,
+        }
+    },
+    defaults = {
+        file_ignore_patterns = {"^./.git/","^node_modules/"},
+    }
+})
+-- colorscheme setup
+require('nightfox').setup({
+    terminal_colors=true,
+    palettes = {
+        carbonfox = {
+            bg1 = '#000000',
+            -- bg0 = '#454545',
+          bg3 = "#121820", -- 55% darkened from stock
+              sel0 = "#131b24",
+        }
+    }
+})
+vim.cmd("colorscheme carbonfox")
 
 local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = 'Telescope find files' })
@@ -171,18 +200,39 @@ require("bufferline").setup{
     options = {
 
     diagnostics = "nvim_lsp",
+    right_mouse_command = "bdelete! %d",
     diagnostics_update_on_event = true,
     hover = {
                 enabled = true,
                 delay = 200,
                 reveal = {'close'}
             }, -- use nvim's diagnostic handler
-    }
+    color_icons = true,
+    close_icon = ' ',
+    show_buffer_close_icons = true,
+    show_close_icon= true,
+    offsets = {
+        {
+            filetype = "NvimTree",
+            seperator = true,
+            text = "File Explorer",
+      highlight = "Directory",
+      text_align = "center"
+        }
+    },
+    indicator = {
+        style = 'underline'
+    },
+pick = {
+              alphabet = "abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMOPQRSTUVWXYZ1234567890",
+            },
+    },
 }
 vim.keymap.set("n", "<leader>bd", ":bdelete<CR>", { desc = "Delete buffer" })
 vim.keymap.set("n", "<leader>l", ":bnext<CR>", { desc = "Next buffer" })
 vim.keymap.set("n", "<leader>h", ":bprevious<CR>", { desc = "Previous buffer" })
 vim.keymap.set("n", "<leader>bp", ":BufferLinePick<CR>", { desc = "Pick buffer" })
+vim.keymap.set("n", "<leader>bdd", ":BufferLineCloseOthers<CR>", { desc = "Close all visible buffers" })
 
 require("nvim-tree").setup({
     view = {
@@ -192,7 +242,8 @@ require("nvim-tree").setup({
         group_empty = true,
     },
     filters = {
-        dotfiles = true,
+        git_ignored = false,
+        dotfiles = false,
         custom = {
             "^.git$"
         }
@@ -203,6 +254,7 @@ require("nvim-tree").setup({
 vim.keymap.set("n","<leader>e",":NvimTreeToggle<CR>")
 vim.keymap.set("n","<leader>f",":NvimTreeFocus<CR>")
 
+-- config for the lualine at the bottom
 require('lualine').setup {
   options = {
     icons_enabled = true,
